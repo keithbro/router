@@ -1,5 +1,11 @@
 declare module "@luxuryescapes/router" {
-  import { Request, Response, Express, NextFunction, Handler } from "express";
+  import {
+    Request,
+    Response,
+    Express,
+    NextFunction,
+    RequestHandler,
+  } from "express";
 
   export function errorHandler(
     err: Error,
@@ -39,7 +45,7 @@ declare module "@luxuryescapes/router" {
       paths: object;
       securityDefinitions: object;
       definitions: object;
-      preHandlers?: Handler[];
+      preHandlers?: RequestHandler[];
     };
   }
 
@@ -51,15 +57,16 @@ declare module "@luxuryescapes/router" {
     };
     responses?: {
       [index: number]: object;
-    }
+    };
   }
 
   interface RouteOptions {
     url: string;
+    operationId?: string;
     schema?: RouteSchema;
     isPublic?: boolean;
-    preHandlers?: Handler[];
-    handlers: Handler[];
+    preHandlers?: RequestHandler[];
+    handlers: RequestHandler<any, any, any, any>[];
     tags?: string[];
     summary?: string;
     description?: string;
@@ -73,7 +80,7 @@ declare module "@luxuryescapes/router" {
 
   export interface RouterAbstraction {
     serveSwagger: (path: string) => void;
-    app: Express,
+    app: Express;
     get: (options: RouteOptions) => void;
     post: (options: RouteOptions) => void;
     put: (options: RouteOptions) => void;
@@ -85,29 +92,33 @@ declare module "@luxuryescapes/router" {
   export function router(app: Express, config: RouterConfig): RouterAbstraction;
 
   interface HTTPError extends Error {
-    new (code: number, message: string, errors?: (string | object)[]) : HTTPError
-    code: number
-    errors: (string | object)[]
-    responseJson: object
+    new (
+      code: number,
+      message: string,
+      errors?: (string | object)[]
+    ): HTTPError;
+    code: number;
+    errors: (string | object)[];
+    responseJson: object;
   }
 
   interface InheritedHTTPError {
-    new (message: string, errors?: (string | object)[]) : HTTPError
-    code: number
-    errors: (string | object)[]
-    responseJson: object
+    new (message: string, errors?: (string | object)[]): HTTPError;
+    code: number;
+    errors: (string | object)[];
+    responseJson: object;
   }
 
   interface errors {
-    HTTPError: HTTPError,
-    ForbiddenError: InheritedHTTPError,
-    UnauthorizedError: InheritedHTTPError,
-    InvalidRequestError: InheritedHTTPError,
-    NotFoundError: InheritedHTTPError,
-    ServerError: InheritedHTTPError,
-    ServiceUnavailableError: InheritedHTTPError,
-    UnprocessableEntityError: InheritedHTTPError
+    HTTPError: HTTPError;
+    ForbiddenError: InheritedHTTPError;
+    UnauthorizedError: InheritedHTTPError;
+    InvalidRequestError: InheritedHTTPError;
+    NotFoundError: InheritedHTTPError;
+    ServerError: InheritedHTTPError;
+    ServiceUnavailableError: InheritedHTTPError;
+    UnprocessableEntityError: InheritedHTTPError;
   }
 
-  export const errors: errors
+  export const errors: errors;
 }
